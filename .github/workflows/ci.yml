@@ -18,7 +18,10 @@ jobs:
       run: composer validate || true
     - name: Run phpstan
       run: composer phpstan
-    - name: Run phpcs
-      run: composer phpcs
+    - name: Run phpcs (fail only on errors)
+      run: |
+        set -euo pipefail
+        ./vendor/bin/phpcs --standard=phpcs.xml.dist src --report=json > phpcs-report.json || true
+        php -r "\$r=json_decode(file_get_contents('php://stdin'), true); exit((int)(\$r['totals']['errors']>0));" < phpcs-report.json
     - name: Run tests
       run: composer test

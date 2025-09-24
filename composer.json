@@ -1,5 +1,5 @@
 {
-  "name": "ondine/ondine",
+  "name": "pnbarbeito/ondine",
   "description": "Ondine — minimal PHP microframework (REST)",
   "type": "library",
   "license": "MIT",
@@ -26,10 +26,22 @@
   "authors": [
     {
       "name": "Pablo Barbeito",
-      "email": "pbarbeito@example.com"
+      "email": "pbarbeito@example.com",
+      "homepage": "https://github.com/pnbarbeito",
+      "role": "Maintainer"
     }
   ],
-  "homepage": "https://github.com/pbarbeito/ondine",
+  "homepage": "https://github.com/pnbarbeito/ondine",
+  "support": {
+    "issues": "https://github.com/pnbarbeito/ondine/issues",
+    "source": "https://github.com/pnbarbeito/ondine"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/pnbarbeito/ondine"
+    }
+  ],
   "keywords": ["microframework","rest","php","ondine"],
   "scripts": {
     "test": "vendor/bin/phpunit --colors=always",

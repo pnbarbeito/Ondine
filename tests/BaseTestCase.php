@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 // Base test case that prepares an in-memory SQLite DB and runs migrations.
 class BaseTestCase extends TestCase
 {
-    protected $__testSqliteFile = null;
+    protected $testSqliteFile = null;
     protected function setUp(): void
     {
         // Ensure autoload is available
@@ -22,7 +22,7 @@ class BaseTestCase extends TestCase
         $tmpFileName = 'data' . DIRECTORY_SEPARATOR . 'test_db_' . uniqid() . '.sqlite';
         putenv('DB_SQLITE_PATH=' . $tmpFileName);
     // remember for cleanup (resolve to project root)
-        $this->__testSqliteFile = realpath(__DIR__ . '/..') . DIRECTORY_SEPARATOR . $tmpFileName;
+        $this->testSqliteFile = realpath(__DIR__ . '/..') . DIRECTORY_SEPARATOR . $tmpFileName;
 
         // Reset the protected static PDO on Ondine\Database\Database using Reflection
         if (class_exists('\Ondine\Database\Database')) {
@@ -53,8 +53,8 @@ class BaseTestCase extends TestCase
         }
 
         // remove temp sqlite file if created
-        if (!empty($this->__testSqliteFile) && file_exists($this->__testSqliteFile)) {
-            @unlink($this->__testSqliteFile);
+        if (!empty($this->testSqliteFile) && file_exists($this->testSqliteFile)) {
+            @unlink($this->testSqliteFile);
         }
     }
 }

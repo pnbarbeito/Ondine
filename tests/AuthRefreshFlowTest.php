@@ -1,6 +1,6 @@
 <?php
 
-use Tests\BaseTestCase;
+namespace Tests;
 
 class AuthRefreshFlowTest extends BaseTestCase
 {

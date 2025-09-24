@@ -5,3 +5,4 @@ database.sqlite
 */data
 /data
 .phpunit.result.cache
+consumer/

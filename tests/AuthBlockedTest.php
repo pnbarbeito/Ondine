@@ -1,10 +1,10 @@
 <?php
 
-use Tests\BaseTestCase;
+namespace Tests;
 
 class AuthBlockedTest extends BaseTestCase
 {
-    public function test_blocked_user_cannot_login()
+    public function testBlockedUserCannotLogin()
     {
         $pdo = \Ondine\Database\Database::getConnection();
         $repo = new \Ondine\Database\Repository\UserRepository($pdo);

@@ -1,6 +1,6 @@
 <?php
 
-use Tests\BaseTestCase;
+namespace Tests;
 
 class UsersDuplicateTest extends BaseTestCase
 {

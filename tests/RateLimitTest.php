@@ -1,6 +1,7 @@
 <?php
 
-use Tests\BaseTestCase;
+namespace Tests;
+
 use Ondine\Middleware\RateLimitMiddleware;
 use Ondine\Request;
 
@@ -32,9 +33,9 @@ class RateLimitTest extends BaseTestCase
         $this->assertInstanceOf(\Ondine\Response::class, $res);
 
         // send would produce 429
-        $this->assertEquals(429, (new ReflectionClass($res))->getProperty('status')->getValue($res));
+        $this->assertEquals(429, (new \ReflectionClass($res))->getProperty('status')->getValue($res));
         // Retry-After header must exist
-        $rHeaders = (new ReflectionClass($res))->getProperty('headers')->getValue($res);
+        $rHeaders = (new \ReflectionClass($res))->getProperty('headers')->getValue($res);
         $this->assertArrayHasKey('Retry-After', $rHeaders);
     }
 }
