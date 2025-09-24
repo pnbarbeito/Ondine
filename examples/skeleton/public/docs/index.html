@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  <title>Ondine API Docs</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4/swagger-ui.css" />
+    <style>body{margin:0}</style>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@4/swagger-ui-bundle.js"></script>
+    <script>
+      window.onload = function() {
+        // store token in-memory for this UI session
+        let bearerToken = null;
+
+        const ui = SwaggerUIBundle({
+          url: '/openapi.yaml',
+          dom_id: '#swagger-ui',
+          presets: [SwaggerUIBundle.presets.apis],
+          layout: 'BaseLayout',
+          requestInterceptor: (req) => {
+            if (bearerToken) {
+              req.headers = req.headers || {};
+              req.headers['Authorization'] = 'Bearer ' + bearerToken;
+            }
+            return req;
+          },
+          responseInterceptor: (res) => {
+            try {
+              if (res && res.body) {
+                const json = typeof res.body === 'string' ? JSON.parse(res.body) : res.body;
+                if (json && json.token) {
+                  bearerToken = json.token;
+                  // also set auth in the UI
+                  ui.preauthorizeApiKey && ui.preauthorizeApiKey('bearerAuth', bearerToken);
+                }
+              }
+            } catch (e) {
+              // ignore parse errors
+            }
+            return res;
+          }
+        })
+      }
+    </script>
+  </body>
+</html>

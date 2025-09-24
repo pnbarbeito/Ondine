@@ -3,7 +3,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $app = new \Ondine\App();
 
-// Register default auth routes from the library
+// Register all default endpoints provided by the library (auth, profiles, users)
 \Ondine\Bootstrap::registerAuthRoutes($app, ['prefix' => '/api']);
 
 // Example custom route

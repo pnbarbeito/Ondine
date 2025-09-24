@@ -47,5 +47,12 @@ class Bootstrap
         // Profiles routes
         $add('GET', '/profiles', [\Ondine\Controllers\ProfilesController::class, 'index']);
         $add('GET', '/profiles/{id}', [\Ondine\Controllers\ProfilesController::class, 'show']);
+
+    // Users routes (CRUD)
+        $add('GET', '/users', [\Ondine\Controllers\UsersController::class, 'index']);
+        $add('GET', '/users/{id}', [\Ondine\Controllers\UsersController::class, 'show']);
+        $add('POST', '/users', [\Ondine\Controllers\UsersController::class, 'store']);
+        $add('PUT', '/users/{id}', [\Ondine\Controllers\UsersController::class, 'update']);
+        $add('DELETE', '/users/{id}', [\Ondine\Controllers\UsersController::class, 'delete']);
     }
 }

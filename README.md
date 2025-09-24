@@ -124,6 +124,39 @@ Seed variables (used by migrations)
 Migrations
 ---------
 
+Skeleton project (crear una app desde el esqueleto)
+----------------------------------------------
+
+Este repositorio incluye un `skeleton` mínimo en `examples/skeleton` que sirve como punto de partida para crear una aplicación basada en Ondine.
+
+Opciones para crear un proyecto desde el skeleton:
+
+- Opción A — copiar localmente (desarrollo, no requiere publicación):
+
+```bash
+# copia el esqueleto a una carpeta nueva
+cp -R examples/skeleton my-app
+cd my-app
+composer install
+cp config/.env.example config/.env
+# editar config/.env si hace falta
+php scripts/migrate.php
+php -S 0.0.0.0:8000 -t public
+```
+
+- Opción B — `composer create-project` (requiere publicar `pnbarbeito/ondine-skeleton` en Packagist):
+
+```bash
+composer create-project pnbarbeito/ondine-skeleton my-app
+cd my-app
+composer install
+cp config/.env.example config/.env
+php scripts/migrate.php
+php -S 0.0.0.0:8000 -t public
+```
+
+Nota: si no deseas publicar el skeleton en Packagist, la opción A (copiar la carpeta `examples/skeleton`) es la forma más sencilla para que otros desarrolladores comiencen.
+
 Migrations are simple PHP files under `migrations/`. They are driver-aware (SQLite vs MariaDB) and seed the initial profile and admin user using environment variables so you can customize them at deploy or test time.
 
 Common commands (fish / bash compatible)
