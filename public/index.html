@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ondine - Test UI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body>
+  <h1>Ondine — Test UI</h1>
+
+  <div class="card">
+    <h3>Login</h3>
+    <label>Username</label>
+    <input id="username" value="sysadmin" />
+    <label>Password</label>
+    <input id="password" type="password" value="SysAdmin8590" />
+    <div class="flex">
+      <button onclick="doLogin()">Login</button>
+      <button onclick="logout()" style="background:#999">Logout</button>
+    </div>
+    <p>Token (stored en localStorage):</p>
+    <pre id="token">(ninguno)</pre>
+  </div>
+
+  <div class="card">
+  <h3>Test endpoint</h3>
+  <label>Method</label>
+  <select id="method">
+      <option>GET</option>
+      <option>POST</option>
+      <option>PUT</option>
+      <option>DELETE</option>
+    </select>
+  <label>URL</label>
+  <input id="url" value="/users" />
+  <label>Body (JSON)</label>
+    <textarea id="body" rows="6">{}</textarea>
+    <div class="flex">
+      <button onclick="sendReq()">Send</button>
+      <button onclick="fillExample()" style="background:#6c757d">Example: create user</button>
+    </div>
+    <p>Response:</p>
+    <pre id="response">(no call)</pre>
+  </div>
+
+    <div class="card">
+    <h3>Quick endpoints</h3>
+    <div class="flex">
+      <button onclick="prepareLoginFromFields()">/login</button>
+      <button onclick="setUrl('/me');document.getElementById('method').value='GET'">/me</button>
+      <button onclick="setUrl('/users');document.getElementById('method').value='GET'">/users</button>
+      <button onclick="setUrl('/profiles');document.getElementById('method').value='GET'">/profiles</button>
+    </div>
+  </div>
+
+  <script>
+    function getToken() { return localStorage.getItem('token') || '' }
+  function setToken(t) { if (t) { localStorage.setItem('token', t); document.getElementById('token').textContent = t } else { localStorage.removeItem('token'); document.getElementById('token').textContent = '(none)' } }
+    setToken(getToken());
+
+    async function doLogin() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: user, password: pass }) });
+      const j = await res.json();
+      if (j.token) { setToken(j.token); alert('Login OK') } else { alert('Login failed: ' + JSON.stringify(j)) }
+    }
+    function logout() { setToken(null); }
+
+    function prepareLoginFromFields() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      setUrl('/api/login');
+      document.getElementById('method').value = 'POST';
+      document.getElementById('body').value = JSON.stringify({ username: user, password: pass }, null, 2);
+    }
+
+  function setUrl(u) { document.getElementById('url').value = u }
+  function fillExample() { document.getElementById('method').value = 'POST'; document.getElementById('url').value = '/users'; document.getElementById('body').value = JSON.stringify({ first_name: 'Ana', last_name: 'Perez', username: 'ana', password: 'secret' }, null, 2) }
+
+    async function sendReq() {
+      const method = document.getElementById('method').value;
+      let url = document.getElementById('url').value;
+      let body = document.getElementById('body').value;
+      let headers = {};
+      let opts = { method };
+      if (method !== 'GET' && method !== 'DELETE') {
+        headers['Content-Type'] = 'application/json';
+        try { opts.body = body && body.trim() !== '' ? body : undefined } catch (e) { opts.body = body }
+      }
+      const token = getToken();
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      opts.headers = headers;
+
+      try {
+        // ensure API prefix
+        const target = url.startsWith('/api') ? url : '/api' + url;
+        const r = await fetch(target, opts);
+        const txt = await r.text();
+        try { document.getElementById('response').textContent = JSON.stringify(JSON.parse(txt), null, 2) } catch (e) { document.getElementById('response').textContent = txt }
+      } catch (err) { document.getElementById('response').textContent = 'Error: ' + err }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+
+</html>

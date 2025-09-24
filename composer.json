@@ -1,0 +1,42 @@
+{
+  "name": "ondine/ondine",
+  "description": "Ondine — minimal PHP microframework (REST)",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0",
+    "phpstan/phpstan": "^1.10",
+    "squizlabs/php_codesniffer": "^3.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ondine\\": "src/"
+    }
+    ,
+    "files": ["src/compat.php"]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Pablo Barbeito",
+      "email": "pbarbeito@example.com"
+    }
+  ],
+  "homepage": "https://github.com/pbarbeito/ondine",
+  "keywords": ["microframework","rest","php","ondine"],
+  "scripts": {
+    "test": "vendor/bin/phpunit --colors=always",
+    "phpstan": "vendor/bin/phpstan analyse src tests --memory-limit=512M",
+  "phpcs": "vendor/bin/phpcs --standard=phpcs.xml.dist src",
+    "check": "composer phpstan && composer phpcs && composer test",
+    "migrate": "php examples/scripts/migrate.php",
+    "dev": "php -S localhost:8000 -t examples/public"
+  }
+}

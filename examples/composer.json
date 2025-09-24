@@ -1,0 +1,19 @@
+{
+  "name": "ondine/example-app",
+  "description": "Example app consuming oncine framework locally",
+  "require": {
+    "php": ">=7.4",
+    "pbarbeito/ondine": "dev-main"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": ".."
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "ExampleApp\\": "src/"
+    }
+  }
+}

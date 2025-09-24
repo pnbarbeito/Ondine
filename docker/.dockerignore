@@ -1,0 +1,9 @@
+vendor
+data
+.git
+node_modules
+Dockerfile
+docker-compose.yml
+*.md
+*.sqlite
+.env
