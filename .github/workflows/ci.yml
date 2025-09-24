@@ -1,0 +1,24 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+    - name: Install dependencies
+      run: composer install --no-progress --no-suggest
+    - name: Run static analysis and tests
+      run: composer validate || true
+    - name: Run phpstan
+      run: composer phpstan
+    - name: Run phpcs
+      run: composer phpcs
+    - name: Run tests
+      run: composer test

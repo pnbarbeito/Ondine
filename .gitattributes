@@ -1,0 +1,9 @@
+# Exclude example app and development files from distributed package
+/examples/ export-ignore
+/tests/ export-ignore
+/vendor/ export-ignore
+/docker/ export-ignore
+/.github/ export-ignore
+/phpunit.xml export-ignore
+/.env export-ignore
+/config/.env export-ignore

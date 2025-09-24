@@ -1,0 +1,12 @@
+# Docker build ignore file
+.git
+.gitignore
+README*.md
+docker/
+.env.example
+data/
+vendor/
+tests/
+*.log
+.DS_Store
+Thumbs.db
