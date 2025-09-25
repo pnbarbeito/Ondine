@@ -5,13 +5,13 @@ return [
         'driver' => 'sqlite',
         // sqlite uses path
         'sqlite' => [
-            'path' => __DIR__ . '/../data/database.sqlite',
+            'path' => 'data/database.sqlite',
         ],
         // mariadb settings
         'mariadb' => [
             'host' => '127.0.0.1',
             'port' => 3306,
-            'database' => 'newframe',
+            'database' => 'ondine',
             'user' => 'root',
             'password' => '',
             'charset' => 'utf8mb4',

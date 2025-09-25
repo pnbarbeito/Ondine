@@ -9,7 +9,10 @@ Ondine uses a small layer over PDO to support two database engines:
 - SQLite (useful for tests and lightweight deployments).
 - MariaDB / MySQL (for production).
 
-The main class is `Ondine\Database\Database` and migrations are managed by `Ondine\Database\Migrator`.
+The main components are:
+- `Ondine\Database\Database`: PDO wrapper with helpers
+- `Ondine\Database\Migrator`: Migration management
+- `Repository/`: Repository pattern implementations for data access
 
 ## Key classes
 
@@ -18,6 +21,18 @@ The main class is `Ondine\Database\Database` and migrations are managed by `Ondi
   - Detects the driver via environment variables (see Configuration below).
 
 - `Ondine\Database\Migrator`
+  - Runs files from the `migrations/` directory in chronological order.
+  - Supports `migrate()` and `rollback()` operations.
+  - Migrations are PHP files that export a callable e.g. `return function(PDO $pdo){ ... };`.
+
+## Repository Layer
+
+The `Repository/` subdirectory contains repository classes that implement the Repository pattern for clean data access:
+
+- `UserRepository`: CRUD operations for users table
+- Custom exceptions for domain-specific error handling
+
+See `Repository/README.md` for detailed documentation.
   - Runs files from the `migrations/` directory in chronological order.
   - Supports `migrate()` and `rollback()` operations.
   - Migrations are PHP files that export a callable e.g. `return function(PDO $pdo){ ... };`.

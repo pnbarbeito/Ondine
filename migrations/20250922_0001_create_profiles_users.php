@@ -30,7 +30,7 @@ return [
       $seedProfileName = $env('SEED_PROFILE_NAME', 'Administrator');
       $seedProfilePermissions = $env('SEED_PROFILE_PERMISSIONS', json_encode(['admin' => 1, 'profiles' => 1, 'users' => 1]));
       $seedAdminUsername = $env('SEED_ADMIN_USERNAME', 'sysadmin');
-      $seedAdminPasswordPlain = $env('SEED_ADMIN_PASSWORD', 'SysAdmin8590');
+      $seedAdminPasswordPlain = $env('SEED_ADMIN_PASSWORD', 'SecureAdmin2025');
       $seedAdminFirst = $env('SEED_ADMIN_FIRSTNAME', 'Sys');
       $seedAdminLast = $env('SEED_ADMIN_LASTNAME', 'Admin');
       $seedAdminState = (int)$env('SEED_ADMIN_STATE', 1);

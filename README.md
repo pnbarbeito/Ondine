@@ -124,39 +124,6 @@ Seed variables (used by migrations)
 Migrations
 ---------
 
-Skeleton project (crear una app desde el esqueleto)
-----------------------------------------------
-
-Este repositorio incluye un `skeleton` mínimo en `examples/skeleton` que sirve como punto de partida para crear una aplicación basada en Ondine.
-
-Opciones para crear un proyecto desde el skeleton:
-
-- Opción A — copiar localmente (desarrollo, no requiere publicación):
-
-```bash
-# copia el esqueleto a una carpeta nueva
-cp -R examples/skeleton my-app
-cd my-app
-composer install
-cp config/.env.example config/.env
-# editar config/.env si hace falta
-php scripts/migrate.php
-php -S 0.0.0.0:8000 -t public
-```
-
-- Opción B — `composer create-project` (requiere publicar `pnbarbeito/ondine-skeleton` en Packagist):
-
-```bash
-composer create-project pnbarbeito/ondine-skeleton my-app
-cd my-app
-composer install
-cp config/.env.example config/.env
-php scripts/migrate.php
-php -S 0.0.0.0:8000 -t public
-```
-
-Nota: si no deseas publicar el skeleton en Packagist, la opción A (copiar la carpeta `examples/skeleton`) es la forma más sencilla para que otros desarrolladores comiencen.
-
 Migrations are simple PHP files under `migrations/`. They are driver-aware (SQLite vs MariaDB) and seed the initial profile and admin user using environment variables so you can customize them at deploy or test time.
 
 Common commands (fish / bash compatible)
@@ -187,26 +154,64 @@ php scripts/migrate.php rollback 1
 env SEED_ADMIN_USERNAME=customadmin SEED_ADMIN_PASSWORD=s3cret php scripts/migrate.php migrate
 ```
 
-Security & notes
+## Skeleton Project
+
+This repository includes a minimal skeleton application that serves as a starting point for building Ondine-based applications. The skeleton is available as a separate repository at [`pnbarbeito/ondine-skeleton`](https://github.com/pnbarbeito/ondine-skeleton).
+
+### Creating a project from the skeleton
+
+**Option A — Using Composer create-project (recommended):**
+
+```bash
+# Install stable version
+composer create-project pnbarbeito/ondine-skeleton my-app
+
+# Or install development version
+composer create-project pnbarbeito/ondine-skeleton my-app dev-main
+
+# Or with dev stability
+composer create-project pnbarbeito/ondine-skeleton my-app --stability dev
+```
+
+**Option B — Manual copy (for development):**
+
+```bash
+# Copy the skeleton to a new folder
+cp -R examples/skeleton my-app
+cd my-app
+composer install
+cp config/.env.example config/.env
+# Edit config/.env if needed
+php scripts/migrate.php
+php -S 0.0.0.0:8000 -t public
+```
+
+The skeleton includes:
+- Complete project structure with PSR-4 autoloading
+- JWT authentication with refresh tokens
+- User management with profiles and permissions
+- Interactive API documentation (Swagger UI)
+- Docker configuration for production deployment
+- PHPUnit test suite
+- Example controllers and middleware
+
+## Security & Notes
 
 - Configure `JWT_SECRET` and `REFRESH_TOKEN_SECRET` in `config/.env` and do not commit them to source control.
 - SQLite is intended for development and testing. For production use MariaDB/MySQL or PostgreSQL.
 - Consider Redis for rate-limiting in high-concurrency environments.
+- The framework supports profile-based permissions for fine-grained access control.
 
-Contributing
-------------
+## Contributing
 
-Contributions are welcome. If you'd like, add a short contributing guide or open issues with proposed changes. For tests and development:
+Contributions are welcome. Please open issues with proposed changes or submit pull requests. For development:
 
 ```bash
 composer install
 ./vendor/bin/phpunit --colors=always
 ```
 
-License
--------
+## License
 
-This project is provided under the terms stated in the repository (check `LICENSE` if present) or use MIT/Apache2 as appropriate for your project.
-
-If you want, I can also add a sample `config/.env` template for MariaDB and a short `CONTRIBUTING.md`.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 

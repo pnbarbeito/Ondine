@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 // Simple wrapper to call the library migrator
 if (!class_exists('\Ondine\\Database\\Migrator')) {

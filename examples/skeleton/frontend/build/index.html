@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Ondine Skeleton</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Ondine Skeleton</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="text-center mb-5">
+                    <h1 class="display-4">Bienvenido a Ondine</h1>
+                    <p class="lead">Un framework PHP ligero para construir APIs RESTful con autenticación JWT y sistema
+                        de perfiles.</p>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Crear Controllers Nuevos</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Para agregar nuevos endpoints, crea una clase en <code>src/Controllers/</code> que herede de
+                            <code>BaseController</code>. Define métodos como <code>get()</code>, <code>post()</code>,
+                            etc., y registra el controller en <code>src/Router.php</code>.</p>
+                        <p>Ejemplo:</p>
+                        <pre><code>class MiController extends BaseController {
+    public function get() {
+        return $this->json(['mensaje' => 'Hola Mundo']);
+    }
+}</code></pre>
+                        <p>Registra en Router:
+                            <code>$router->addRoute('GET', '/mi-endpoint', [MiController::class, 'get']);</code></p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Sistema de Perfiles y Permisos</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Ondine utiliza un sistema de perfiles con permisos definidos en JSON. Cada perfil tiene
+                            permisos para endpoints específicos:</p>
+                        <ul>
+                            <li><strong>admin</strong>: Permisos completos (valor 1).</li>
+                            <li><strong>profiles</strong>: Gestionar perfiles (0: solo lectura, 1: lectura/escritura).
+                            </li>
+                            <li><strong>users</strong>: Gestionar usuarios (0: solo lectura, 1: lectura/escritura).</li>
+                        </ul>
+                        <p>Los permisos se configuran en la base de datos y se validan en los middlewares. Para nuevos
+                            endpoints, agrega los permisos correspondientes en el perfil.</p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="/docs" class="btn btn-primary btn-lg me-3">Probar Endpoints en /docs</a>
+                    <a href="https://github.com/pnbarbeito/Ondine" target="_blank"
+                        class="btn btn-outline-secondary btn-lg">Ver Repositorio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

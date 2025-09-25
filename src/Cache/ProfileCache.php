@@ -13,7 +13,7 @@ class ProfileCache
     protected $dir;
     protected $ttl;
 
-    public function __construct(string $dir = null, int $ttl = null)
+    public function __construct(?string $dir = null, ?int $ttl = null)
     {
         // default cache directory under project data/cache
         $projectRoot = getcwd();

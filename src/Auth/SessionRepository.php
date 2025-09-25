@@ -128,7 +128,7 @@ class SessionRepository
      * Rotate the refresh token for a given session id.
      * Replaces the stored hashed refresh token and updates timestamps.
      */
-    public function rotate(int $sessionId, string $newRefreshToken, int $ttlSeconds = null)
+    public function rotate(int $sessionId, string $newRefreshToken, ?int $ttlSeconds = null)
     {
         $ttl = $ttlSeconds ?? (60 * 60 * 24 * 30);
         $now = date('Y-m-d H:i:s');
