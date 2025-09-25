@@ -20,7 +20,8 @@ RUN set -eux; \
 ENV COMPOSER_HOME=/tmp
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-WORKDIR /var/www/html  # Working directory
+# Working directory
+WORKDIR /var/www/html  
 
 # Create www-data user with predictable UID/GID
 RUN usermod -u ${USER_ID} www-data || useradd -u ${USER_ID} -G www-data -s /sbin/nologin www-data
