@@ -6,7 +6,9 @@ class AuthRefreshFlowTest extends BaseTestCase
 {
     public function testLoginRefreshLogoutFlow()
     {
-        $ctrl = new \Ondine\Controllers\AuthController();
+    $pdo = \Ondine\Database\Database::getConnection();
+    $sessionRepo = new \Ondine\Auth\SessionRepository($pdo);
+    $ctrl = new \Ondine\Controllers\AuthController($pdo, $sessionRepo);
 
         // create a test user via repository to login
         $pdo = \Ondine\Database\Database::getConnection();

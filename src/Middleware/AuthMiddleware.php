@@ -6,11 +6,13 @@ use Ondine\Request;
 use Ondine\Response;
 use Ondine\Auth\Auth;
 use Ondine\Database\Database;
+use Ondine\Cache\ProfileCache;
 
 class AuthMiddleware
 {
     protected $except = ['/login'];
     protected $auth;
+    protected $cache;
 
     public function __construct(array $options = [])
     {
@@ -24,6 +26,9 @@ class AuthMiddleware
         $repo = new \Ondine\Database\Repository\UserRepository($pdo);
         $secret = \Env::get('JWT_SECRET', 'changeme');
         $this->auth = new Auth($repo, $secret);
+
+        // lightweight file-based cache for profile lookups (no external deps)
+        $this->cache = new ProfileCache();
     }
 
     public function handle(Request $request)
@@ -58,7 +63,60 @@ class AuthMiddleware
         }
 
         // attach to request for controllers
-        $request->user = $this->auth->getRepo()->findWithProfile($payload['sub']);
+        // We'll cache permissions per profile (key = profile_{id}).
+        $uid = $payload['sub'] ?? null;
+        if (!$uid) {
+            return new Response(401, ['error' => true, 'message' => 'invalid token']);
+        }
+
+        // load minimal user info (includes profile_id)
+        $user = $this->auth->getRepo()->find($uid);
+        if (!$user) {
+            return new Response(401, ['error' => true, 'message' => 'unknown user']);
+        }
+
+        $profileId = isset($user['profile_id']) ? (int)$user['profile_id'] : null;
+        $perms = null;
+        if ($profileId) {
+            try {
+                $perms = $this->cache->get('profile_' . $profileId);
+            } catch (\Throwable $e) {
+                $perms = null;
+            }
+        }
+
+        if ($perms === null && $profileId) {
+            // fetch permissions from profiles table and cache them
+            try {
+                $pdo = Database::getConnection();
+                $stmt = $pdo->prepare('SELECT permissions FROM profiles WHERE id = :id');
+                $stmt->execute([':id' => $profileId]);
+                $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+                if ($row && !empty($row['permissions'])) {
+                    $decoded = json_decode($row['permissions'], true);
+                    if ($decoded === null) {
+                        $clean = stripslashes($row['permissions']);
+                        $decoded = json_decode($clean, true);
+                    }
+                    $perms = $decoded !== null ? $decoded : null;
+                } else {
+                    $perms = null;
+                }
+            } catch (\Throwable $e) {
+                $perms = null;
+            }
+
+            try {
+                // cache even null so we avoid repeated DB hits for missing permissions
+                $this->cache->set('profile_' . $profileId, $perms);
+            } catch (\Throwable $e) {
+                // ignore cache write failures
+            }
+        }
+
+        // Attach profile_permissions to the user array for controllers
+        $user['profile_permissions'] = $perms;
+        $request->user = $user;
         $request->token_payload = $payload;
 
     // if requesting /me (root or under /api), allow for any authenticated user (no endpoint permission required)
@@ -80,6 +138,11 @@ class AuthMiddleware
 
         // load permissions from profile (findWithProfile returns 'profile_permissions')
         $perms = $request->user['profile_permissions'] ?? null; // decoded array or null
+
+        // If profile explicitly has admin => truthy, bypass permission checks
+        if (is_array($perms) && !empty($perms['admin'])) {
+            return; // admin has full access
+        }
 
         $hasPerm = null;
         if (is_array($perms) && array_key_exists($permName, $perms)) {

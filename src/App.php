@@ -71,13 +71,16 @@ class App
                 return;
             }
 
-            [$controller, $method] = $route['handler'];
+            $handler = $route['handler'];
 
-            if (is_string($controller) && class_exists($controller)) {
-                $controllerInstance = new $controller();
+            if (is_array($handler) && count($handler) === 2 && is_string($handler[0]) && class_exists($handler[0])) {
+                $controllerClass = $handler[0];
+                $method = $handler[1];
+                $controllerInstance = new $controllerClass();
                 $result = call_user_func([$controllerInstance, $method], $request, $route['params']);
-            } elseif (is_callable($route['handler'])) {
-                $result = call_user_func($route['handler'], $request, $route['params']);
+            } elseif (is_callable($handler)) {
+                // closure or other callable (including [object, method])
+                $result = call_user_func($handler, $request, $route['params']);
             } else {
                 throw new \RuntimeException('Invalid handler');
             }

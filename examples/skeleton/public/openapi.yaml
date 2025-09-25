@@ -215,6 +215,8 @@ components:
       properties:
         token:
           type: string
+        refresh_token:
+          type: string
 
     ProfileCreate:
       type: object

@@ -12,13 +12,34 @@ class AuthController
     protected $auth;
     protected $sessionRepo;
 
-    public function __construct()
+    /**
+     * Allow dependency injection for easier testing. If dependencies are not
+     * provided, the constructor falls back to the previous behavior (get
+     * connection from Database::getConnection()).
+     *
+     * @param \PDO|null $pdo
+     * @param \Ondine\Auth\SessionRepository|null $sessionRepo
+     * @param \Ondine\Auth\Auth|null $auth
+     */
+    public function __construct($pdo = null, $sessionRepo = null, $auth = null)
     {
-        $pdo = \Ondine\Database\Database::getConnection();
-        $repo = new UserRepository($pdo);
-        $secret = \Env::get('JWT_SECRET', 'changeme');
-        $this->auth = new Auth($repo, $secret);
-        $this->sessionRepo = new SessionRepository($pdo);
+        if ($pdo === null) {
+            $pdo = \Ondine\Database\Database::getConnection();
+        }
+
+        if ($auth !== null) {
+            $this->auth = $auth;
+        } else {
+            $repo = new UserRepository($pdo);
+            $secret = \Env::get('JWT_SECRET', 'changeme');
+            $this->auth = new Auth($repo, $secret);
+        }
+
+        if ($sessionRepo !== null) {
+            $this->sessionRepo = $sessionRepo;
+        } else {
+            $this->sessionRepo = new SessionRepository($pdo);
+        }
     }
 
     public function login($request, $params)
@@ -83,8 +104,16 @@ class AuthController
             return ['error' => true, 'message' => 'invalid session user'];
         }
 
+        // rotate refresh token for this session to mitigate replay attacks
+        $newRefresh = bin2hex(random_bytes(32));
+        // $session contains 'id'
+        $sid = isset($session['id']) ? (int)$session['id'] : null;
+        if ($sid) {
+            $this->sessionRepo->rotate($sid, $newRefresh);
+        }
+
         $newToken = \Ondine\Auth\Jwt::encode(['sub' => $userId], \Env::get('JWT_SECRET', 'changeme'));
-        return ['token' => $newToken];
+        return ['token' => $newToken, 'refresh_token' => $newRefresh];
     }
 
     public function logout($request, $params)

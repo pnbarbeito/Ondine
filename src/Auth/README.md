@@ -33,7 +33,7 @@ El módulo `Auth` proporciona:
 
 - `POST /api/login` — body: `{ username, password }` → response `{ token, refresh_token }`.
 - `GET /api/me` — header `Authorization: Bearer <token>` → returns user and payload.
-- `POST /api/token/refresh` — body: `{ refresh_token }` → devuelve `{ token }` si el refresh_token es válido y no revocado.
+- `POST /api/token/refresh` — body: `{ refresh_token }` → devuelve `{ token, refresh_token }` si el refresh_token es válido y no revocado. El endpoint realiza rotación del refresh token (se genera un nuevo refresh_token y se guarda su hash en la tabla `sessions`).
 - `POST /api/logout` — body: `{ refresh_token }` → revoca la sesión.
 
 
@@ -45,7 +45,16 @@ El módulo `Auth` proporciona:
   - Guarda `REFRESH_TOKEN_SECRET` en el entorno (no en el repositorio). Para rotaciones, usa `REFRESH_TOKEN_SECRETS` y sube la versión en `REFRESH_TOKEN_SECRET_VERSION`.
   - Para mayor seguridad opcional: almacena un `token_id` (UUID) y guarda el HMAC sobre `token_id`, no sobre el token completo.
   - Registra `ip` y `user_agent` en las sesiones si deseas rastrear y detectar anomalías.
-  - Establece TTLs razonables: JWT corto (ej. 15-60 min), refresh tokens largos (ej. 30 días) y posibilidad de revocación inmediata.
+  - Establece TTLs razonables: JWT corto (ej. 15 min recomendado), refresh tokens largos (ej. 14-30 días recomendado) y posibilidad de revocación inmediata.
+  - Nota: al renovar el token (refresh) el servidor emite un nuevo `refresh_token` (rotación). El cliente debe sustituir el antiguo por el nuevo.
+
+## Profile cache and permissions
+
+Ondine utiliza una caché por perfil (`ProfileCache`) para reducir consultas a la BD al resolver permisos por request. Reglas prácticas:
+
+- `PROFILE_CACHE_TTL` (segundos) puede configurarse en `.env` para controlar el tiempo que duran las entradas en cache (por defecto 60s).
+- Cuando un perfil se actualiza (endpoint `ProfilesController::update` o `delete`), el controlador invalida la entrada de cache `profile_{id}` para que los cambios sean visibles inmediatamente.
+- En despliegues multi-host, la cache por archivos es local a cada instancia; para coherencia entre instancias se recomienda usar un cache centralizado (Redis) o forzar revocación de sesiones para forzar refresh.
 
 
 ## API del código (clases)

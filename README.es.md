@@ -90,6 +90,7 @@ Puntos principales
 - Autenticación
   - `POST /api/login` — body: `{ username, password }` → devuelve `{ token, refresh_token }`
   - `POST /api/token/refresh` — body: `{ refresh_token }` → devuelve `{ token }`
+   - `POST /api/token/refresh` — body: `{ refresh_token }` → devuelve `{ token, refresh_token }` (el servidor rota el refresh token y devuelve uno nuevo).
   - `POST /api/logout` — body: `{ refresh_token }` → revoca la sesión
   - `GET /api/me` — requiere `Authorization: Bearer <token>`
 
@@ -173,6 +174,11 @@ Seguridad y buenas prácticas
 - Configura `JWT_SECRET` y `REFRESH_TOKEN_SECRET` en `config/.env` y no los incluyas en el repositorio.
 - SQLite es para desarrollo/pruebas; para producción usa MariaDB/MySQL o PostgreSQL.
 - Considera Redis para rate-limiting en entornos con alta concurrencia.
+
+Cache de perfiles y permisos
+
+- Ondine usa una caché por perfil (`ProfileCache`) para mejorar rendimiento en la resolución de permisos por request. La TTL por defecto es de 60s y se puede ajustar con la variable `PROFILE_CACHE_TTL` en `config/.env`.
+- Cuando se actualiza un perfil mediante `PUT /api/profiles/{id}` o `DELETE /api/profiles/{id}`, el controlador invalida la entrada de caché correspondiente para que los cambios se vean inmediatamente.
 
 
 Contribuir

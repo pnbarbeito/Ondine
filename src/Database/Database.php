@@ -6,16 +6,70 @@ class Database
 {
     protected static $pdo;
 
+    /**
+     * Detect the project root directory.
+     * When installed as a composer dependency, use the current working directory.
+     * When developing the framework itself, use the framework directory.
+     */
+    private static function detectProjectRoot()
+    {
+        // Prefer the current working directory if it looks like a project root
+        $cwd = getcwd();
+        if ($cwd) {
+            if (file_exists($cwd . '/composer.json') || file_exists($cwd . '/config/config.php')) {
+                return $cwd;
+            }
+            // Walk up from cwd a few levels looking for composer.json
+            $p = $cwd;
+            for ($i = 0; $i < 6; $i++) {
+                if (file_exists($p . '/composer.json') || file_exists($p . '/config/config.php')) {
+                    return $p;
+                }
+                $parent = dirname($p);
+                if ($parent === $p) {
+                    break;
+                }
+                $p = $parent;
+            }
+        }
+
+        // If the package is installed in vendor, derive project root from the vendor segment
+        $dir = __DIR__;
+        $vendorSeg = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
+        $pos = strpos($dir, $vendorSeg);
+        if ($pos !== false) {
+            $possibleRoot = substr($dir, 0, $pos);
+            if ($possibleRoot && file_exists($possibleRoot . '/composer.json')) {
+                return realpath($possibleRoot) ?: $possibleRoot;
+            }
+        }
+
+        // Fallback to framework directory (useful for developing the library itself)
+        $frameworkRoot = realpath(__DIR__ . '/../../');
+        if ($frameworkRoot !== false) {
+            return $frameworkRoot;
+        }
+
+        return __DIR__ . '/../../';
+    }
+
     public static function getConnection()
     {
         if (self::$pdo) {
             return self::$pdo;
         }
 
-        // load .env if present
+        // load .env if present - try project root first, then framework
         if (file_exists(__DIR__ . '/../../src/Env.php')) {
             require_once __DIR__ . '/../../src/Env.php';
-            \Env::load(__DIR__ . '/../../config/.env');
+            $projectRoot = self::detectProjectRoot();
+            $envPath = $projectRoot . '/config/.env';
+            if (file_exists($envPath)) {
+                \Env::load($envPath);
+            } else {
+                // Fallback to framework .env
+                \Env::load(__DIR__ . '/../../config/.env');
+            }
         }
 
     // Prefer explicit driver from environment, otherwise null
@@ -28,10 +82,9 @@ class Database
         if ($driver === 'sqlite') {
             $path = \Env::get('DB_SQLITE_PATH', (require __DIR__ . '/../../config/config.php')['db']['sqlite']['path']);
             // if path is not absolute, resolve against project root for consistent behavior
-            $projectRoot = realpath(__DIR__ . '/../../');
-            if ($projectRoot === false) {
-                $projectRoot = __DIR__ . '/../../';
-            }
+            // When installed as a composer dependency, use current working directory as project root
+            // Otherwise, use the framework directory (for development)
+            $projectRoot = self::detectProjectRoot();
             $isAbsolute = preg_match('/^[a-zA-Z]:[\\\\\/]/', $path) === 1;
             if (!$isAbsolute) {
                 $path = $projectRoot . DIRECTORY_SEPARATOR . ltrim($path, "./\\");

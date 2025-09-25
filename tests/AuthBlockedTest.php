@@ -19,7 +19,7 @@ class AuthBlockedTest extends BaseTestCase
             'state' => 0,
         ]);
 
-        $authCtrl = new \Ondine\Controllers\AuthController();
+    $authCtrl = new \Ondine\Controllers\AuthController($pdo);
 
         $req = new \Ondine\Request();
         $req->parsedBody = ['username' => $username, 'password' => 'secret123'];

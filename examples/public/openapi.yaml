@@ -121,6 +121,62 @@ paths:
       responses:
         '200':
           description: OK
+    post:
+      summary: Create profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Bad Request
+
+  /profiles/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+    put:
+      summary: Update profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileCreate'
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
 
 components:
   securitySchemes:
@@ -159,3 +215,26 @@ components:
       properties:
         token:
           type: string
+
+    ProfileCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        permissions:
+          type: object
+          additionalProperties:
+            type: integer
+
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        permissions:
+          type: object
+          additionalProperties:
+            type: integer
