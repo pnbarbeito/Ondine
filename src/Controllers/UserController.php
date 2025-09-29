@@ -54,9 +54,7 @@ class UserController
 
     $rules = [];
     foreach ($data as $k => $v) {
-      if ($k === 'theme') {
-        $rules[$k] = ['max:32'];
-      }
+      $rules[$k] = ['max:32'];
     }
     $errors = \Ondine\Validation::validate($data, $rules);
     
@@ -104,9 +102,7 @@ class UserController
 
     $rules = [];
     foreach ($data as $k => $v) {
-      if ($k === 'first_name' || $k === 'last_name') {
-        $rules[$k] = ['required', 'min:2', 'max:64'];
-      }
+      $rules[$k] = ['required', 'min:2', 'max:64'];
     }
     $errors = \Ondine\Validation::validate($data, $rules);
     
