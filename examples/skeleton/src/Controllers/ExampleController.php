@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use Ondine\Database\Database;
-
+use Ondine\Response;
 class ExampleController
 {
   protected $pdo;
@@ -37,8 +37,7 @@ class ExampleController
   {
     $id = $params['id'] ?? null;
     if (!$id) {
-      \Ondine\Response::setStatusCode(400);
-      return ['error' => true, 'message' => 'missing id'];
+      return new Response(400, ['error' => true, 'message' => 'missing id']);
     }
     return ['item' => ['id' => $id, 'name' => 'Item ' . $id]];
   }

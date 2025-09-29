@@ -4,7 +4,7 @@ namespace Ondine\Controllers;
 
 use Ondine\Database\Database;
 use Ondine\Cache\ProfileCache;
-
+use Ondine\Response;
 class ProfilesController
 {
     protected $pdo;
@@ -37,15 +37,13 @@ class ProfilesController
     {
         $id = $params['id'] ?? null;
         if (!$id) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'id required'];
+            return new Response(400, ['error' => true, 'message' => 'id required']);
         }
         $stmt = $this->pdo->prepare('SELECT id, name, permissions FROM profiles WHERE id = :id');
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$row) {
-            \Ondine\Response::setStatusCode(404);
-            return ['error' => true, 'message' => 'not found'];
+            return new Response(404, ['error' => true, 'message' => 'not found']);
         }
         if (!empty($row['permissions'])) {
             $decoded = json_decode($row['permissions'], true);
@@ -65,8 +63,7 @@ class ProfilesController
         $id = $params['id'] ?? null;
         $body = $request->parsedBody ?: [];
         if (!$id) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'id required'];
+            return new Response(400, ['error' => true, 'message' => 'id required']);
         }
 
         $allowed = ['name','permissions'];
@@ -111,8 +108,7 @@ class ProfilesController
     {
         $id = $params['id'] ?? null;
         if (!$id) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'id required'];
+            return new Response(400, ['error' => true, 'message' => 'id required']);
         }
         $stmt = $this->pdo->prepare('DELETE FROM profiles WHERE id = :id');
         $stmt->execute([':id' => $id]);
@@ -135,13 +131,11 @@ class ProfilesController
         $name = isset($body['name']) ? trim($body['name']) : '';
         $permissions = $body['permissions'] ?? null;
         if ($name === '') {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'name required'];
+            return new Response(400, ['error' => true, 'message' => 'name required']);
         }
 
         if ($permissions !== null && !is_array($permissions)) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'permissions must be an object/array'];
+            return new Response(400, ['error' => true, 'message' => 'permissions must be an object/array']);
         }
 
         $permJson = $permissions !== null ? json_encode($permissions) : null;
@@ -157,7 +151,30 @@ class ProfilesController
             // ignore
         }
 
-        \Ondine\Response::setStatusCode(201);
-        return ['id' => $id];
+        return new Response(201, ['id' => $id]);
+    }
+
+    public function distinctPermissions($request, $params)
+    {
+        $stmt = $this->pdo->query('SELECT permissions FROM profiles WHERE permissions IS NOT NULL');
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $distinctItems = [];
+        foreach ($rows as $row) {
+            if (!empty($row['permissions'])) {
+                $decoded = json_decode($row['permissions'], true);
+                if ($decoded === null) {
+                    $clean = stripslashes($row['permissions']);
+                    $decoded = json_decode($clean, true);
+                }
+                if (is_array($decoded)) {
+                    foreach ($decoded as $key => $value) {
+                        $distinctItems[$key] = true;
+                    }
+                }
+            }
+        }
+        $distinctItems = array_keys($distinctItems);
+        sort($distinctItems);
+        return ['data' => $distinctItems];
     }
 }

@@ -51,8 +51,7 @@ class AuthController
         ];
         $errors = \Ondine\Validation::validate($body, $rules);
         if (!empty($errors)) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'fields' => $errors];
+            return new Response(400, ['error' => true, 'fields' => $errors]);
         }
         $body = \Ondine\Validation::sanitize($body, $rules);
         $user = $body['username'];
@@ -60,14 +59,12 @@ class AuthController
 
         // if user exists but blocked, return 403
         if ($this->auth->isUserBlocked($user)) {
-            \Ondine\Response::setStatusCode(403);
-            return ['error' => true, 'message' => 'user blocked'];
+            return new Response(403, ['error' => true, 'message' => 'user blocked']);
         }
 
         $token = $this->auth->login($user, $pass);
         if (!$token) {
-            \Ondine\Response::setStatusCode(401);
-            return ['error' => true, 'message' => 'invalid credentials'];
+            return new Response(401, ['error' => true, 'message' => 'invalid credentials']);
         }
 
         // create refresh token and persist
@@ -82,26 +79,22 @@ class AuthController
         $body = $request->parsedBody ?: [];
         $rt = $body['refresh_token'] ?? null;
         if (!$rt) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'missing refresh_token'];
+            return new Response(400, ['error' => true, 'message' => 'missing refresh_token']);
         }
 
         $session = $this->sessionRepo->findByToken($rt);
         if (!$session || $session['revoked']) {
-            \Ondine\Response::setStatusCode(401);
-            return ['error' => true, 'message' => 'invalid refresh_token'];
+            return new Response(401, ['error' => true, 'message' => 'invalid refresh_token']);
         }
 
         if (strtotime($session['expires_at']) < time()) {
-            \Ondine\Response::setStatusCode(401);
-            return ['error' => true, 'message' => 'refresh_token expired'];
+            return new Response(401, ['error' => true, 'message' => 'refresh_token expired']);
         }
 
         $userId = $session['user_id'] ?? null;
         $user = $this->auth->getRepo()->findWithProfile($userId);
         if (!$user) {
-            \Ondine\Response::setStatusCode(401);
-            return ['error' => true, 'message' => 'invalid session user'];
+            return new Response(401, ['error' => true, 'message' => 'invalid session user']);
         }
 
         // rotate refresh token for this session to mitigate replay attacks
@@ -121,20 +114,18 @@ class AuthController
         $body = $request->parsedBody ?: [];
         $rt = $body['refresh_token'] ?? null;
         if (!$rt) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'missing refresh_token'];
+            return new Response(400, ['error' => true, 'message' => 'missing refresh_token']);
         }
 
         $this->sessionRepo->revoke($rt);
-        return ['ok' => true];
+        return new Response(200, ['ok' => true]);
     }
 
     public function me($request, $params)
     {
         $hdr = $request->headers['Authorization'] ?? ($request->headers['authorization'] ?? null);
         if (!$hdr) {
-            \Ondine\Response::setStatusCode(401);
-            return ['error' => true, 'message' => 'missing token'];
+            return new Response(401, ['error' => true, 'message' => 'missing token']);
         }
 
         if (stripos($hdr, 'Bearer ') === 0) {
@@ -145,8 +136,7 @@ class AuthController
 
         $payload = $this->auth->verifyToken($token);
         if (!$payload) {
-            \Ondine\Response::setStatusCode(401);
-            return ['error' => true, 'message' => 'invalid token'];
+            return new Response(401, ['error' => true, 'message' => 'invalid token']);
         }
 
     // load user with profile

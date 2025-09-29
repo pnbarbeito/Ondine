@@ -47,6 +47,7 @@ class Bootstrap
         // Profiles routes
         $add('GET', '/profiles', [\Ondine\Controllers\ProfilesController::class, 'index']);
         $add('GET', '/profiles/{id}', [\Ondine\Controllers\ProfilesController::class, 'show']);
+        $add('GET', '/profiles/distinct-permissions', [\Ondine\Controllers\ProfilesController::class, 'distinctPermissions']);
 
     // Users routes (CRUD)
         $add('GET', '/users', [\Ondine\Controllers\UsersController::class, 'index']);

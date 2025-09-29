@@ -25,13 +25,11 @@ class UsersController
     {
         $id = $params['id'] ?? null;
         if (!$id) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'id required'];
+            return new Response(400, ['error' => true, 'message' => 'id required']);    
         }
         $row = $this->repo->find($id);
         if (!$row) {
-            \Ondine\Response::setStatusCode(404);
-            return ['error' => true, 'message' => 'not found'];
+            return new Response(404, ['error' => true, 'message' => 'not found']);
         }
         return ['data' => $row];
     }
@@ -50,8 +48,7 @@ class UsersController
         ];
         $errors = \Ondine\Validation::validate($body, $rules);
         if (!empty($errors)) {
-            \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'fields' => $errors];
+            return new Response(400, ['error' => true, 'fields' => $errors]);
         }
         $body = \Ondine\Validation::sanitize($body, $rules);
         $pw_algo = defined('PASSWORD_ARGON2I') ? PASSWORD_ARGON2I : PASSWORD_DEFAULT;
@@ -66,11 +63,9 @@ class UsersController
         ];
         try {
             $id = $this->repo->create($data);
-            \Ondine\Response::setStatusCode(201);
-            return ['id' => $id];
+            return new Response(201, ['id' => $id]);
         } catch (\Ondine\Database\Repository\DuplicateUsernameException $e) {
-            \Ondine\Response::setStatusCode(409);
-            return ['error' => true, 'message' => 'username already exists', 'field' => 'username'];
+            return new Response(409, ['error' => true, 'message' => 'username already exists', 'field' => 'username']);
         }
     }
 
@@ -79,8 +74,7 @@ class UsersController
         $id = $params['id'] ?? null;
         $body = $request->parsedBody ?: [];
         if (!$id) {
-                \Ondine\Response::setStatusCode(400);
-            return ['error' => true, 'message' => 'id required'];
+            return new Response(400, ['error' => true, 'message' => 'id required']);
         }
         $allowed = ['first_name','last_name','profile_id','theme','username','password','state'];
         $data = [];
