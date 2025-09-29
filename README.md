@@ -96,10 +96,21 @@ Main endpoints
   - `GET /api/users/{id}`
   - `POST /api/users`
   - `PUT /api/users/{id}`
+  - `PUT /api/users/{id}/change-password` — body: `{ new_password }` → requires `Authorization: Bearer <token>`
   - `DELETE /api/users/{id}`
 
 - Profiles
   - `GET /api/profiles`
+  - `GET /api/profiles/{id}`
+  - `GET /api/profiles/distinct-permissions` — requires `Authorization: Bearer <token>`
+  - `POST /api/profiles`
+  - `PUT /api/profiles/{id}`
+  - `DELETE /api/profiles/{id}`
+
+- User (authenticated user operations)
+  - `PUT /api/user/theme` — body: `{ theme }` → requires `Authorization: Bearer <token>`
+  - `PUT /api/user/profile` — body: `{ first_name?, last_name? }` → requires `Authorization: Bearer <token>`
+  - `PUT /api/user/password` — body: `{ current_password, new_password }` → requires `Authorization: Bearer <token>`
 
 Testing
 

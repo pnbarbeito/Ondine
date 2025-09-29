@@ -15,6 +15,7 @@ class Response
         $this->status = $status;
         $this->data = $data;
         $this->headers = $headers;
+        self::setStatusCode($status);
     }
 
     public static function setStatusCode(int $code)

@@ -44,19 +44,26 @@ $app->get('/api/users', [\Ondine\Controllers\UsersController::class, 'index']);
 $app->get('/api/users/{id}', [\Ondine\Controllers\UsersController::class, 'show']);
 $app->post('/api/users', [\Ondine\Controllers\UsersController::class, 'store']);
 $app->put('/api/users/{id}', [\Ondine\Controllers\UsersController::class, 'update']);
+$app->put('/api/users/{id}/change-password', [\Ondine\Controllers\UsersController::class, 'changePassword']);
 $app->delete('/api/users/{id}', [\Ondine\Controllers\UsersController::class, 'delete']);
 
 // Profiles / permissions
 // Profiles endpoints
 $app->get('/api/profiles', [\Ondine\Controllers\ProfilesController::class, 'index']);
-$app->get('/api/profiles/{id}', [\Ondine\Controllers\ProfilesController::class, 'show']);
 $app->get('/api/profiles/distinct-permissions', [\Ondine\Controllers\ProfilesController::class, 'distinctPermissions']);
+$app->get('/api/profiles/{id}', [\Ondine\Controllers\ProfilesController::class, 'show']);
 
 // Auth routes
 $app->post('/api/login', [\Ondine\Controllers\AuthController::class, 'login']);
 $app->get('/api/me', [\Ondine\Controllers\AuthController::class, 'me']);
+
 // Refresh and logout
 $app->post('/api/token/refresh', [\Ondine\Controllers\AuthController::class, 'refresh']);
 $app->post('/api/logout', [\Ondine\Controllers\AuthController::class, 'logout']);
+
+// User routes
+$app->put('/api/user/theme', [\Ondine\Controllers\UserController::class, 'SetTheme']);
+$app->put('/api/user/profile', [\Ondine\Controllers\UserController::class, 'updateProfile']);
+$app->put('/api/user/password', [\Ondine\Controllers\UserController::class, 'changePassword']);
 
 $app->run();

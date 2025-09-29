@@ -12,14 +12,14 @@ class UsersDuplicateTest extends BaseTestCase
         $req1->parsedBody = ['first_name' => 'Test', 'last_name' => 'User', 'username' => $uniq, 'password' => 'secret12'];
         $ctrl = new \Ondine\Controllers\UsersController();
         $res1 = $ctrl->store($req1, []);
-        $this->assertArrayHasKey('id', $res1);
+        $this->assertArrayHasKey('id', $res1->getData());
 
         // attempt duplicate
         $req2 = new \Ondine\Request();
         $req2->parsedBody = ['first_name' => 'Test', 'last_name' => 'User2', 'username' => $uniq, 'password' => 'secret12'];
         $res2 = $ctrl->store($req2, []);
-        $this->assertArrayHasKey('error', $res2);
-        $this->assertEquals(true, $res2['error']);
-        $this->assertEquals('username already exists', $res2['message']);
+        $this->assertArrayHasKey('error', $res2->getData());
+        $this->assertEquals(true, $res2->getData()['error']);
+        $this->assertEquals('username already exists', $res2->getData()['message']);
     }
 }

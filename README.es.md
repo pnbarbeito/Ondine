@@ -97,10 +97,21 @@ Abre `http://localhost:8080/docs` para acceder a la documentación interactiva d
   - `GET /api/users/{id}`
   - `POST /api/users`
   - `PUT /api/users/{id}`
+  - `PUT /api/users/{id}/change-password` — body: `{ new_password }` → requiere `Authorization: Bearer <token>`
   - `DELETE /api/users/{id}`
 
 - **Perfiles**
   - `GET /api/profiles`
+  - `GET /api/profiles/{id}`
+  - `GET /api/profiles/distinct-permissions` — requiere `Authorization: Bearer <token>`
+  - `POST /api/profiles`
+  - `PUT /api/profiles/{id}`
+  - `DELETE /api/profiles/{id}`
+
+- **Usuario (operaciones del usuario autenticado)**
+  - `PUT /api/user/theme` — body: `{ theme }` → requiere `Authorization: Bearer <token>`
+  - `PUT /api/user/profile` — body: `{ first_name?, last_name? }` → requiere `Authorization: Bearer <token>`
+  - `PUT /api/user/password` — body: `{ current_password, new_password }` → requiere `Authorization: Bearer <token>`
 
 ## Pruebas
 

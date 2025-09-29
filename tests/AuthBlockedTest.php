@@ -27,8 +27,8 @@ class AuthBlockedTest extends BaseTestCase
         $res = $authCtrl->login($req, []);
 
         // should return error and set HTTP status 403
-        $this->assertArrayHasKey('error', $res);
-        $this->assertEquals('user blocked', $res['message']);
+        $this->assertArrayHasKey('error', $res->getData());
+        $this->assertEquals('user blocked', $res->getData()['message']);
         $this->assertEquals(403, \Ondine\Response::getLastStatus());
     }
 }

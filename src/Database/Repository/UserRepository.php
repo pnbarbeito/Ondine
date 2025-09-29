@@ -85,6 +85,14 @@ class UserRepository
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    public function findPasswordById($id)
+    {
+        $stmt = $this->pdo->prepare('SELECT password FROM users WHERE id = :id');
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ? $row['password'] : null;
+    }
+
     public function findWithProfile($id)
     {
         $stmt = $this->pdo->prepare('SELECT u.*, p.name AS profile_name, p.permissions AS profile_permissions FROM users u LEFT JOIN profiles p ON u.profile_id = p.id WHERE u.id = :id');

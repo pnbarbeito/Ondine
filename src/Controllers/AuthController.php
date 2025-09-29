@@ -71,7 +71,7 @@ class AuthController
         $refresh = bin2hex(random_bytes(32));
         $this->sessionRepo->create($this->auth->getRepo()->findByUsername($user)['id'], $refresh);
 
-        return ['token' => $token, 'refresh_token' => $refresh];
+        return new Response(200, ['token' => $token, 'refresh_token' => $refresh]);
     }
 
     public function refresh($request, $params)
@@ -106,7 +106,7 @@ class AuthController
         }
 
         $newToken = \Ondine\Auth\Jwt::encode(['sub' => $userId], \Env::get('JWT_SECRET', 'changeme'));
-        return ['token' => $newToken, 'refresh_token' => $newRefresh];
+        return new Response(200, ['token' => $newToken, 'refresh_token' => $newRefresh]);
     }
 
     public function logout($request, $params)

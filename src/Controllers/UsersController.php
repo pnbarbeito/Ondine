@@ -108,8 +108,7 @@ class UsersController
         }
             $errors = \Ondine\Validation::validate($data, $rules);
         if (!empty($errors)) {
-            http_response_code(400);
-            return ['error' => true, 'fields' => $errors];
+            return new Response(400, ['error' => true, 'fields' => $errors]);
         }
             $data = \Ondine\Validation::sanitize($data, $rules);
         if (isset($data['password'])) {
@@ -138,10 +137,44 @@ class UsersController
     {
         $id = $params['id'] ?? null;
         if (!$id) {
-            http_response_code(400);
-            return ['error' => true, 'message' => 'id required'];
+            return new Response(400, ['error' => true, 'message' => 'id required']);
         }
         $count = $this->repo->delete($id);
         return ['deleted' => (int)$count];
+    }
+
+    public function changePassword($request, $params)
+    {
+        $id = $params['id'] ?? null;
+        $body = $request->parsedBody ?: [];
+        if (!$id) {
+            return new Response(400, ['error' => true, 'message' => 'id required']);
+        }
+        $newPassword = $body['new_password'] ?? '';
+        if ($newPassword === '') {
+            return new Response(400, ['error' => true, 'message' => 'new_password required']);
+        }
+
+        $rules = ['new_password' => ['required', 'min:6', 'max:128']];
+        $data = ['new_password' => $newPassword];
+        $errors = \Ondine\Validation::validate($data, $rules);
+        if (!empty($errors)) {
+            return new Response(400, ['error' => true, 'fields' => $errors]);
+        }
+        $data = \Ondine\Validation::sanitize($data, $rules);
+
+        $pw_algo = defined('PASSWORD_ARGON2I') ? PASSWORD_ARGON2I : PASSWORD_DEFAULT;
+        $hashed = password_hash($data['new_password'], $pw_algo);
+
+        $count = $this->repo->update($id, ['password' => $hashed]);
+
+        // revoke all sessions for this user to force re-login
+        if ($count) {
+            $pdo = \Ondine\Database\Database::getConnection();
+            $sessionRepo = new \Ondine\Auth\SessionRepository($pdo);
+            $sessionRepo->revokeAllForUser((int)$id);
+        }
+
+        return ['updated' => (int)$count];
     }
 }

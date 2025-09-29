@@ -13,13 +13,15 @@ class Router
 
     public function match($method, $path)
     {
+        $path = rtrim($path, '/');
         foreach ($this->routes as $route) {
             if ($route['method'] !== $method) {
                 continue;
             }
 
-            $pattern = preg_replace('#\{([^}]+)\}#', '([^/]+)', $route['path']);
-            $pattern = '#^' . $pattern . '$#';
+            $routePath = rtrim($route['path'], '/');
+            $pattern = preg_replace('#\{([^}]+)\}#', '([^/]+)', $routePath);
+            $pattern = '/^' . str_replace('/', '\\/', $pattern) . '$/';
 
             if (preg_match($pattern, $path, $matches)) {
                 array_shift($matches);
