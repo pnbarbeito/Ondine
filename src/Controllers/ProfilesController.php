@@ -5,6 +5,7 @@ namespace Ondine\Controllers;
 use Ondine\Database\Database;
 use Ondine\Cache\ProfileCache;
 use Ondine\Response;
+
 class ProfilesController
 {
     protected $pdo;

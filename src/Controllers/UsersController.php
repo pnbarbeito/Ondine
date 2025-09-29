@@ -25,7 +25,7 @@ class UsersController
     {
         $id = $params['id'] ?? null;
         if (!$id) {
-            return new Response(400, ['error' => true, 'message' => 'id required']);    
+            return new Response(400, ['error' => true, 'message' => 'id required']);
         }
         $row = $this->repo->find($id);
         if (!$row) {
