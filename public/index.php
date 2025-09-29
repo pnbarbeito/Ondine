@@ -62,7 +62,7 @@ $app->post('/api/token/refresh', [\Ondine\Controllers\AuthController::class, 're
 $app->post('/api/logout', [\Ondine\Controllers\AuthController::class, 'logout']);
 
 // User routes
-$app->put('/api/user/theme', [\Ondine\Controllers\UserController::class, 'SetTheme']);
+$app->put('/api/user/theme', [\Ondine\Controllers\UserController::class, 'setTheme']);
 $app->put('/api/user/profile', [\Ondine\Controllers\UserController::class, 'updateProfile']);
 $app->put('/api/user/password', [\Ondine\Controllers\UserController::class, 'changePassword']);
 

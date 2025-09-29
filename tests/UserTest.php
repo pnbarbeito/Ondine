@@ -35,7 +35,7 @@ class UserTest extends BaseTestCase
         $req = new \Ondine\Request();
         $req->headers['Authorization'] = 'Bearer ' . $token;
         $req->parsedBody = ['theme' => 'light'];
-        $res = $ctrl->SetTheme($req, []);
+        $res = $ctrl->setTheme($req, []);
 
         $this->assertArrayHasKey('updated', $res);
         $this->assertEquals(1, $res['updated']);
@@ -47,7 +47,7 @@ class UserTest extends BaseTestCase
         $req = new \Ondine\Request();
         $req->headers['Authorization'] = 'Bearer invalid';
         $req->parsedBody = ['theme' => 'dark'];
-        $res = $ctrl->SetTheme($req, []);
+        $res = $ctrl->setTheme($req, []);
 
         $this->assertInstanceOf(\Ondine\Response::class, $res);
         $this->assertEquals(401, $res->getStatus());
