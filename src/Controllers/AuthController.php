@@ -143,6 +143,6 @@ class AuthController
     // use getter to access protected repo property
         $repo = $this->auth->getRepo();
         $user = $repo->findWithProfile($payload['sub']);
-        return ['user' => $user, 'token_payload' => $payload];
+        return new Response(200, ['user' => $user, 'token_payload' => $payload]);
     }
 }

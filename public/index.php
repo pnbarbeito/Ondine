@@ -50,6 +50,7 @@ $app->delete('/api/users/{id}', [\Ondine\Controllers\UsersController::class, 'de
 // Profiles endpoints
 $app->get('/api/profiles', [\Ondine\Controllers\ProfilesController::class, 'index']);
 $app->get('/api/profiles/{id}', [\Ondine\Controllers\ProfilesController::class, 'show']);
+$app->get('/api/profiles/distinct-permissions', [\Ondine\Controllers\ProfilesController::class, 'distinctPermissions']);
 
 // Auth routes
 $app->post('/api/login', [\Ondine\Controllers\AuthController::class, 'login']);
